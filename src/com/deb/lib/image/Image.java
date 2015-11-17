@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 public abstract class Image {
 	BufferedImage image;
 	
-	/**
+	/** 
 	 * Type of the image
 	 * 
 	 * @return The type as defined by BufferedImage.TYPE_...
