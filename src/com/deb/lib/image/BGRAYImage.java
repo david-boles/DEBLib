@@ -3,17 +3,17 @@ package com.deb.lib.image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public class BYTEGRAYImage extends Image {
+public class BGRAYImage extends Image {
 
-	public BYTEGRAYImage(int width, int height) {
+	public BGRAYImage(int width, int height) {
 		super(width, height);
 	}
 	
-	public BYTEGRAYImage(File f) {
+	public BGRAYImage(File f) {
 		super(f);
 	}
 	
-	public BYTEGRAYImage(Image i) {
+	public BGRAYImage(Image i) {
 		super(i);
 	}
 
