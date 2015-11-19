@@ -33,4 +33,28 @@ public class ColorFs {
 		else return 0;
 	}
 	
+	public static Color mixColors(Color[] c, Float[] v) {
+		if(c.length != v.length) return null;
+		
+		//Output color component variables
+		int outA = 0;
+		int outR = 0;
+		int outG = 0;
+		int outB = 0;
+		
+		for(int i = 0; i < c.length; i++) {
+			outA += c[i].getBlue() * v[i];
+			outR += c[i].getBlue() * v[i];
+			outG += c[i].getBlue() * v[i];
+			outB += c[i].getBlue() * v[i];
+		}
+		
+		outA = boundComponentRound(outA);
+		outR = boundComponentRound(outR);
+		outG = boundComponentRound(outG);
+		outB = boundComponentRound(outB);
+		
+		return new Color(outR, outG, outB, outA);
+	}
+	
 }
