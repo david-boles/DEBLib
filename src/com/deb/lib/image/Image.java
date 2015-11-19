@@ -11,6 +11,18 @@ import javax.imageio.ImageIO;
 public abstract class Image {
 	BufferedImage image;
 	
+	public Image(int width, int height) {
+		this.image = new BufferedImage(width, height, this.getType());
+	}
+	
+	public Image(File f) {
+		this.readImage(f);
+	}
+	
+	public Image(Image i) {
+		this.image = this.convertToThisType(i.image);
+	}
+	
 	/** 
 	 * Type of the image
 	 * 
@@ -85,5 +97,13 @@ public abstract class Image {
 	
 	public int getHeight() {
 		return image.getHeight();
+	}
+	
+	public BufferedImage getBufImageCopy() {
+		return this.convertToThisType(this.image);
+	}
+	
+	public void setBufImageCopy(BufferedImage i) {
+		this.image = this.convertToThisType(this.image);
 	}
 }
