@@ -43,9 +43,9 @@ public class ColorFs {
 		int outB = 0;
 		
 		for(int i = 0; i < c.length; i++) {
-			outA += c[i].getBlue() * v[i];
-			outR += c[i].getBlue() * v[i];
-			outG += c[i].getBlue() * v[i];
+			outA += c[i].getAlpha() * v[i];
+			outR += c[i].getRed() * v[i];
+			outG += c[i].getGreen() * v[i];
 			outB += c[i].getBlue() * v[i];
 		}
 		
