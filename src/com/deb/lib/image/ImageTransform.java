@@ -19,7 +19,7 @@ public abstract class ImageTransform {
 	 */
 	public boolean applyTransformation(BufferedImage i) {
 		if(i.getType() == this.getType() || i.getType() == -1) {
-			this.applyTransformation(i);
+			this.applyTransformationChecked(i);
 			return true;
 		}else {
 			return false;
