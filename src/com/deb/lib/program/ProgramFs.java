@@ -65,6 +65,11 @@ public class ProgramFs {
 	public static void errPrint(String out) {System.err.print("[" + System.currentTimeMillis() + "] " + out);}
 	public static void errPrintln(String out) {System.err.println("[" + System.currentTimeMillis() + "] " + out);}
 	
+	public static void outP (String out) {outPrint(out);}
+	public static void outPL (String out) {outPrintln(out);}
+	public static void errP (String out) {errPrint(out);}
+	public static void errPL (String out) {errPrintln(out);}
+	
 	public Object loadObject(File file) {
 		try {
 			ObjectInputStream oin = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)));
