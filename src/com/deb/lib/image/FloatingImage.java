@@ -21,6 +21,9 @@ public class FloatingImage {
 		case BufferedImage.TYPE_BYTE_GRAY:
 			this.setFromBGRAY((BGRAYImage) i);
 			break;
+		case BufferedImage.TYPE_INT_RGB:
+			this.setFromIRGB((IRGBImage) i);
+			break;
 		}
 	}
 	
@@ -97,6 +100,37 @@ public class FloatingImage {
 			for(int x = 0; x < this.image.length; x++) {
 				for(int y = 0; y < this.image[0].length; y++) {
 					Color px = new Color(this.image[x][y][1], this.image[x][y][2], this.image[x][y][3], this.image[x][y][0]);
+					out.setPixel(x, y, px);
+				}
+			}
+			
+			return out;
+		}else {
+			return null;
+		}
+	}
+	
+	//IARGBImage <-> Floating image converters NOTE: Incomplete...
+	public void setFromIRGB(IRGBImage i) {
+		this.initializeArray(i.getWidth(), i.getHeight(), 4);
+		this.imageType = i.getType();
+		for(int x = 0; x < i.getWidth(); x++) {
+			for(int y = 0; y < i.getHeight(); y++) {
+				Color px = i.getPixel(x, y);
+				this.image[x][y][0] = px.getRed()/255f;
+				this.image[x][y][1] = px.getGreen()/255f;
+				this.image[x][y][2] = px.getBlue()/255f;
+			}
+		}
+	}
+	
+	public IARGBImage getToIRGB() {
+		if(this.imageType == BufferedImage.TYPE_INT_RGB) {
+			IARGBImage out = new IARGBImage(this.image.length, this.image[0].length);
+			
+			for(int x = 0; x < this.image.length; x++) {
+				for(int y = 0; y < this.image[0].length; y++) {
+					Color px = new Color(this.image[x][y][0], this.image[x][y][1], this.image[x][y][2]);//NOTE: Incorrect...
 					out.setPixel(x, y, px);
 				}
 			}
