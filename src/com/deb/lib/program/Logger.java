@@ -62,4 +62,14 @@ public class Logger {
 	public void error(String message, Object o) {
 		this.error(message + ": " + o);
 	}
+	
+	public void exception(String customMessage, Exception exception) {
+		this.err.print("Exception occured");
+		if(customMessage != null || customMessage.equals("")) {
+			this.err.println(", " + customMessage + ": ");
+		}else {
+			this.err.println(": ");
+		}
+		exception.printStackTrace(this.err);
+	}
 }
