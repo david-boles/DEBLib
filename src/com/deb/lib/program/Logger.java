@@ -4,6 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
+/**
+ * Various useful functions for logging updates and errors. Logger is non static and allows construction with different outputs.
+ * @author David Boles
+ *
+ */
 public class Logger {
 	PrintStream out;
 	PrintStream err;
@@ -63,6 +68,7 @@ public class Logger {
 		this.error(message + ": " + o);
 	}
 	
+	@SuppressWarnings("null")
 	public void exception(String customMessage, Exception exception) {
 		this.err.print("Exception occured");
 		if(customMessage != null || customMessage.equals("")) {
