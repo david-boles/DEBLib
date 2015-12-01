@@ -20,6 +20,7 @@ public class BasicSettingManager {
 			oin.close();
 			return(true);
 		}catch(Exception e) {
+			Logger.uLogger.exception("Settings reading failed", e);
 			return(false);
 		}
 	}
@@ -32,6 +33,7 @@ public class BasicSettingManager {
 			this.hasUpdates = false;
 			return(true);
 		}catch(Exception e) {
+			Logger.uLogger.exception("Settings writing failed", e);
 			return(false);
 		}
 	}

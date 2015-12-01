@@ -10,6 +10,8 @@ import java.io.PrintStream;
  *
  */
 public class Logger {
+	public static Logger uLogger = new Logger();
+	
 	PrintStream out;
 	PrintStream err;
 	
