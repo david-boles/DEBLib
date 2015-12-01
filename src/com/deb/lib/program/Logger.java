@@ -14,6 +14,7 @@ public class Logger {
 	
 	PrintStream out;
 	PrintStream err;
+	boolean enabled = true;
 	
 	/**
 	 * Sets the Logger's PrintStreams to those of System.
@@ -55,29 +56,37 @@ public class Logger {
 	}
 	
 	public void log(String log) {
-		this.out.println("[" + System.currentTimeMillis() + "] " + log);
+		if(this.enabled) this.out.println("[" + System.currentTimeMillis() + "] " + log);
 	}
 	
 	public void log(String message, Object o) {
-		this.log(message + ": " + o);
+		if(this.enabled) this.log(message + ": " + o);
 	}
 	
 	public void error(String error) {
-		this.err.println("[" + System.currentTimeMillis() + "] " + error);
+		if(this.enabled) this.err.println("[" + System.currentTimeMillis() + "] " + error);
 	}
 	
 	public void error(String message, Object o) {
-		this.error(message + ": " + o);
+		if(this.enabled) this.error(message + ": " + o);
 	}
 	
 	@SuppressWarnings("null")
 	public void exception(String customMessage, Exception exception) {
-		this.err.print("Exception occured");
-		if(customMessage != null || customMessage.equals("")) {
-			this.err.println(", " + customMessage + ": ");
-		}else {
-			this.err.println(": ");
+		if(this.enabled) {
+			this.err.print("Exception occured");
+			if(customMessage != null || customMessage.equals("")) {
+				this.err.println(", " + customMessage + ": ");
+			}else {
+				this.err.println(": ");
+			}
+			exception.printStackTrace(this.err);
 		}
-		exception.printStackTrace(this.err);
+	}
+	
+	public boolean setEnabled(boolean enabled) {
+		boolean out = this.enabled;
+		this.enabled = enabled;
+		return out;
 	}
 }
