@@ -23,6 +23,10 @@ public abstract class Image {
 		this.image = this.convertToThisType(i.image);
 	}
 	
+	public Image(BufferedImage i) {
+		this.image = this.convertToThisType(i);
+	}
+	
 	/** 
 	 * Type of the image
 	 * 

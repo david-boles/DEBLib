@@ -16,6 +16,10 @@ public class IRGBImage extends Image {
 	public IRGBImage(Image i) {
 		super(i);
 	}
+	
+	public IRGBImage(BufferedImage i) {
+		super(i);
+	}
 
 	@Override
 	public int getType() {

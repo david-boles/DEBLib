@@ -60,14 +60,22 @@ public class ProgramFs {
 		}
 	}
 	
+	@Deprecated
 	public static void outPrint(String out) {System.out.print("[" + System.currentTimeMillis() + "] " + out);}
+	@Deprecated
 	public static void outPrintln(String out) {System.out.println("[" + System.currentTimeMillis() + "] " + out);}
+	@Deprecated
 	public static void errPrint(String out) {System.err.print("[" + System.currentTimeMillis() + "] " + out);}
+	@Deprecated
 	public static void errPrintln(String out) {System.err.println("[" + System.currentTimeMillis() + "] " + out);}
-	
+
+	@Deprecated
 	public static void outP (String out) {outPrint(out);}
+	@Deprecated
 	public static void outPL (String out) {outPrintln(out);}
+	@Deprecated
 	public static void errP (String out) {errPrint(out);}
+	@Deprecated
 	public static void errPL (String out) {errPrintln(out);}
 	
 	public Object loadObject(File file) {

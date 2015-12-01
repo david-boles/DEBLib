@@ -183,4 +183,16 @@ public class FloatingImage {
 	void initializeArray(int width, int height, int data) {
 		this.image = new float[width][height][data];
 	}
+	
+	public FloatingImage newCropped(int x0, int y0, int x1, int y1) {
+		FloatingImage fi = new FloatingImage();
+		fi.setType(this.getType());
+		fi.initializeArray(x1-x0+1, y1-y0+1, this.image[0][0].length);
+		for(int x = x0; x <= x1; x++) {
+			for(int y = y0; y <= y1; y++) {
+				fi.setPixel(x-x0, y-y0, this.image[x][y]);
+			}
+		}
+		return fi;
+	}
 }
