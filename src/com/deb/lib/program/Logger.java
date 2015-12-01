@@ -27,9 +27,9 @@ public class Logger {
 	}
 	
 	/**
-	 * Calls createNewFile() on input and sets
-	 * @param log
-	 * @param errorLog
+	 * Calls createNewFile() on input and sets the Logger's PrintStreams to new ones of the Files. Defaults to System's in the case of an IOException.
+	 * @param log The file for standard logging
+	 * @param errorLog The file for erroring
 	 */
 	public Logger(File log, File errorLog) {
 		try {
@@ -47,7 +47,19 @@ public class Logger {
 		}
 	}
 	
-	public void log() {
-		
+	public void log(String log) {
+		this.out.println("[" + System.currentTimeMillis() + "] " + log);
+	}
+	
+	public void log(String message, Object o) {
+		this.log(message + ": " + o);
+	}
+	
+	public void error(String error) {
+		this.err.println("[" + System.currentTimeMillis() + "] " + error);
+	}
+	
+	public void error(String message, Object o) {
+		this.error(message + ": " + o);
 	}
 }
