@@ -16,6 +16,10 @@ public class IARGBImage extends Image {
 	public IARGBImage(Image i) {
 		super(i);
 	}
+	
+	public IARGBImage(BufferedImage i) {
+		super(i);
+	}
 
 	@Override
 	public int getType() {

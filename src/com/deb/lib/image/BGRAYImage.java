@@ -16,6 +16,10 @@ public class BGRAYImage extends Image {
 	public BGRAYImage(Image i) {
 		super(i);
 	}
+	
+	public BGRAYImage(BufferedImage i) {
+		super(i);
+	}
 
 	@Override
 	public int getType() {
