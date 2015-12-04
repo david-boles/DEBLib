@@ -55,24 +55,88 @@ public class Logger {
 		}
 	}
 	
-	public void log(String log) {
-		if(this.enabled) this.out.println("[" + System.currentTimeMillis() + "] " + log);
+	/**
+	 * Printlns your log preceded by the time in millis inside square brackets.
+	 * @param log What you want to be printed
+	 * @return If logging was successful
+	 */
+	public boolean log(String log) {
+		if(this.enabled) {
+			this.out.println("[" + System.currentTimeMillis() + "] " + log);
+			return true;
+		}
+		return false;
 	}
 	
-	public void log(String message, Object o) {
-		if(this.enabled) this.log(message + ": " + o);
+	/**
+	 * Logs your message followed by ": " + o.toString.
+	 * @param message Your message
+	 * @param o Your object
+	 * @return If logging was successful
+	 */
+	public boolean log(String message, Object o) {
+		return this.log(message + ": " + o.toString());
 	}
 	
-	public void error(String error) {
-		if(this.enabled) this.err.println("[" + System.currentTimeMillis() + "] " + error);
+	/**
+	 * Logs your message followed by ": " + o[0].toString and then each additional object preceded by ", ".
+	 * @param message Your message
+	 * @param o Your objects
+	 * @return If logging was successful
+	 */
+	public boolean log(String message, Object[] o) {
+		String out = message + ": " + o[0].toString();
+		for(int i = 1; i < o.length; i++) {
+			out += ", " + o[i].toString();
+		}
+		return this.log(out);
 	}
 	
-	public void error(String message, Object o) {
-		if(this.enabled) this.error(message + ": " + o);
+	/**
+	 * Printlns your error preceded by the time in millis inside square brackets.
+	 * @param log What you want to be printed
+	 * @return If erroring was successful
+	 */
+	public boolean error(String error) {
+		if(this.enabled) {
+			this.err.println("[" + System.currentTimeMillis() + "] " + error);
+			return true;
+		}
+		return false;
 	}
 	
+	/**
+	 * Errors your message followed by ": " + o.toString.
+	 * @param message Your message
+	 * @param o Your object
+	 * @return If erroring was successful
+	 */
+	public boolean error(String message, Object o) {
+		return this.error(message + ": " + o);
+	}
+	
+	/**
+	 * Logs your message followed by ": " + o[0].toString and then each additional object preceded by ", ".
+	 * @param message Your message
+	 * @param o Your objects
+	 * @return If logging was successful
+	 */
+	public boolean error(String message, Object[] o) {
+		String out = message + ": " + o[0].toString();
+		for(int i = 1; i < o.length; i++) {
+			out += ", " + o[i].toString();
+		}
+		return this.error(out);
+	}
+	
+	/**
+	 * Errors your message and your exception's stack trace. If you do not want a message, it can be null of blank.
+	 * @param customMessage Your message
+	 * @param exception Your exception
+	 * @return If erroring was successful.
+	 */
 	@SuppressWarnings("null")
-	public void exception(String customMessage, Exception exception) {
+	public boolean exception(String customMessage, Exception exception) {
 		if(this.enabled) {
 			this.err.print("Exception occured");
 			if(customMessage != null || customMessage.equals("")) {
@@ -81,9 +145,16 @@ public class Logger {
 				this.err.println(": ");
 			}
 			exception.printStackTrace(this.err);
+			return true;
 		}
+		return false;
 	}
 	
+	/**
+	 * Allows you to set whether or not the Logger instance should log.
+	 * @param enabled Whether or not it should log
+	 * @return Whether or not it was enabled before
+	 */
 	public boolean setEnabled(boolean enabled) {
 		boolean out = this.enabled;
 		this.enabled = enabled;
