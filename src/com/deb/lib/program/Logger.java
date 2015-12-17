@@ -84,7 +84,7 @@ public class Logger {
 	 * @param o Your objects
 	 * @return If logging was successful
 	 */
-	public boolean log(String message, Object[] o) {
+	public boolean logMore(String message, Object[] o) {
 		String out = message + ": " + o[0].toString();
 		for(int i = 1; i < o.length; i++) {
 			out += ", " + o[i].toString();
@@ -121,7 +121,7 @@ public class Logger {
 	 * @param o Your objects
 	 * @return If logging was successful
 	 */
-	public boolean error(String message, Object[] o) {
+	public boolean errorMore(String message, Object[] o) {
 		String out = message + ": " + o[0].toString();
 		for(int i = 1; i < o.length; i++) {
 			out += ", " + o[i].toString();

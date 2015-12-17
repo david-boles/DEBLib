@@ -27,9 +27,9 @@ public class FloatingImage {
 		}
 	}
 	
-	public FloatingImage(int width, int height, int data, int type) {
+	public FloatingImage(int width, int height, int dataLength, int type) {
 		this.imageType = type;
-		this.initializeArray(width, height, data);
+		this.initializeArray(width, height, dataLength);
 	}
 	
 	//Pixel getter and setter
