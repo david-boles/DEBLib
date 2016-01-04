@@ -9,6 +9,9 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 public class ProgramFs {
 	
@@ -78,7 +81,7 @@ public class ProgramFs {
 	@Deprecated
 	public static void errPL (String out) {errPrintln(out);}
 	
-	public Object loadObject(File file) {
+	public static Object loadObject(File file) {
 		try {
 			ObjectInputStream oin = new ObjectInputStream(new BufferedInputStream(new FileInputStream(file)));
 			Object out = oin.readObject();
@@ -90,7 +93,7 @@ public class ProgramFs {
 		}
 	}
 	
-	public boolean saveObject(File file, Object object) {
+	public static boolean saveObject(File file, Object object) {
 		try {
 			ObjectOutputStream oout = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
 			oout.writeObject(object);
@@ -98,6 +101,27 @@ public class ProgramFs {
 			return(true);
 		}catch(Exception e) {
 			ProgramFs.errPrintln("Error saving object at:" + file.getAbsolutePath() + ", error message:\n" + e.getMessage());
+			return(false);
+		}
+	}
+	
+	public static String loadString(File file) {
+		try {
+			return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
+		}catch(Exception e) {
+			ProgramFs.errPrintln("Error loading object at:" + file.getAbsolutePath() + ", error message:\n" + e.getMessage());
+			return null;
+		}
+	}
+	
+	public static boolean saveString(File file, String string) {
+		try {
+			PrintWriter p = new PrintWriter(file);
+			p.print(string);
+			p.close();
+			return(true);
+		}catch(Exception e) {
+			ProgramFs.errPL("Error saving string at:" + file.getAbsolutePath() + ", error message:\n" + e.getMessage());
 			return(false);
 		}
 	}

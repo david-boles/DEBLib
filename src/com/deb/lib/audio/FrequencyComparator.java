@@ -76,7 +76,6 @@ public class FrequencyComparator {
 		}*/
 		
 		double out = (ArrayFs.doubleTotal(ArrayFs.doubleABS(offsetValues))/((double)samplesPC)) * Math.PI;
-		System.out.println(out);
 		if (out > 1d) return 1d;
 		if (out < 0d) return 0d;
 		return out;

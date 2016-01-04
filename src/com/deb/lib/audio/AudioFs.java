@@ -5,11 +5,21 @@ import java.nio.ByteBuffer;
 import com.deb.lib.math.ArrayFs;
 
 public class AudioFs {
-	public static byte[] doubleTo8b_Signed_BEndian_Tone(double[] in) {
+	public static byte[] doubleTo8b_Signed_BEndian(double[] in) {
 		byte[] out = new byte[in.length];
 		
 		for(int i = 0; i < in.length; i++) {
 			out[i] = (byte) (in[i] * 127d);
+		}
+		
+		return out;
+	}
+	
+	public static double[] byte_Signed_BEndianToDouble(byte[] in) {
+		double[] out = new double[in.length];
+		
+		for(int i = 0; i < in.length; i++) {
+			out[i] = (double) (in[i] / 128d);
 		}
 		
 		return out;
