@@ -1,4 +1,4 @@
-package space.davidboles.ht.tp;
+package space.davidboles.lib.ht.tp;
 
 public class MIMESwitcher {
 	
@@ -26,6 +26,7 @@ public class MIMESwitcher {
 
 	public static final String[][] types =  {
 		{".png", "images/png"},
+		{".js", "application/javascript"},
 		{".bmp", "image/bmp"},
 		{".gif", "image/gif"},
 		{".ico", "image/x-icon"},

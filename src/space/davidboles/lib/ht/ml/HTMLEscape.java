@@ -1,4 +1,4 @@
-package space.davidboles.ht.ml;
+package space.davidboles.lib.ht.ml;
 
 public class HTMLEscape {
 	private static final String[][] escapes = {
