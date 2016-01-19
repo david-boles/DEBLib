@@ -1,4 +1,4 @@
-package com.deb.lib.http;
+package space.davidboles.ht.tp;
 
 public class MIMESwitcher {
 	
