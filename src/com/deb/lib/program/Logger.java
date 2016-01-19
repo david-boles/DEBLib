@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 
 /**
+ *
  * Various useful functions for logging updates and errors. Logger is non static and allows construction with different outputs.
  * @author David Boles
  *
