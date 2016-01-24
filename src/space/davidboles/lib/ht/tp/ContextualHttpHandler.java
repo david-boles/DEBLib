@@ -4,13 +4,13 @@ import java.io.OutputStream;
 
 import com.sun.net.httpserver.HttpHandler;
 
-public abstract class DefinedHttpHandler implements HttpHandler {
+public abstract class ContextualHttpHandler implements HttpHandler {
 
 	public String error404 = "HTTP Error 404. Please try different pages or content...";
 	
-	public DefinedHttpHandler() { }
+	public ContextualHttpHandler() { }
 	
-	public DefinedHttpHandler(String error404) {
+	public ContextualHttpHandler(String error404) {
 		this.error404 = error404;
 	}
 	

@@ -9,7 +9,7 @@ import java.net.URISyntaxException;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 
-public class FolderHttpHandler extends DefinedHttpHandler {
+public class FolderHttpHandler extends ContextualHttpHandler {
 
 	public String urlPath;
 	public File directory;
