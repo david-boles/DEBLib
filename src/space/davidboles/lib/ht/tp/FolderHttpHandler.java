@@ -38,7 +38,6 @@ public class FolderHttpHandler extends ContextualHttpHandler {
 		if(!path.startsWith("/")) path = "/" + path;
 		
 		File file = new File(root + path).getCanonicalFile();
-		System.out.println(file.getCanonicalPath());
 		
 		if (!file.isFile()) {
 			this.defaultError404(t);
