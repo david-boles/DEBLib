@@ -101,6 +101,7 @@ public class ProgramFs {
 			return(true);
 		}catch(Exception e) {
 			ProgramFs.errPrintln("Error saving object at:" + file.getAbsolutePath() + ", error message:\n" + e.getMessage());
+			e.printStackTrace();
 			return(false);
 		}
 	}
