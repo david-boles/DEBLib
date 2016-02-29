@@ -1,4 +1,4 @@
-package space.davidboles.lib.neuralnetwork.processors;
+package space.davidboles.lib.neuralnetwork.old.processors;
 
 public class PassthroughProcessor extends NetworkProcessor {
 

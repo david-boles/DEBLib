@@ -1,4 +1,4 @@
-package space.davidboles.lib.neuralnetwork.processors;
+package space.davidboles.lib.neuralnetwork.old.processors;
 
 public class StandardProcessor extends NetworkProcessor {
 	
@@ -21,9 +21,9 @@ public class StandardProcessor extends NetworkProcessor {
 		return sigmoid(out);
 	}
 	
-	private float sigmoid(float input) {
+	private float sigmoid(float input) {//TODO check
 		float out = input;
-		out*=7.5;
+		out*=4;//Modify
 		out/=Float.MAX_VALUE;
 		out= (float) Math.pow(Math.E, out);
 		out+=1;
