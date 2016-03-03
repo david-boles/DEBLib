@@ -10,7 +10,7 @@ public class HTTPServerSimpleManager {
 	HttpServer s;
 	
 	public HTTPServerSimpleManager(int port) throws IOException {
-		this.s = HttpServer.create(new InetSocketAddress(port), 0);
+		this.s = HttpServer.create(new InetSocketAddress(port), 100);
 		this.s.setExecutor(null);
 	    this.s.start();
 	}
