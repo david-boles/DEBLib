@@ -1,5 +1,8 @@
 package space.davidboles.lib.neuralnetwork;
 
+import java.util.Arrays;
+import java.util.Random;
+
 import space.davidboles.lib.math.UsefulMaths;
 
 public class NeuralNetwork {
@@ -12,17 +15,49 @@ public class NeuralNetwork {
 	 * The coefficients of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The coefficient for the neuron of the preceding layer (e.g. the one giving output).
 	 */
 	float[][][] connectionCoefficients;
-	float[][][] absConnectionCoefficients;
+	float[][] absConnectionCoefficientsTotal;
 	float[][][] powishConnectionCoefficients;
 	
 	/**
 	 * The constants of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The neuron of the preceding layer (e.g. the one giving output).
 	 */
 	float[][][] connectionConstants;
-	float[][] doubleConstantTotal;//TODO need just double
+	float[][][] doubleConnectionConstants;
 	
-	public NeuralNetwork() throws IllegalArgumentException {
-		//TODO
+	public NeuralNetwork(int[] neuronsPerLayer, boolean initRandom) {
+		this.layerNumNeurons = neuronsPerLayer;
+		
+		float[][][] empty = new float[neuronsPerLayer.length-1][][];
+		for(int layer = 0; layer < empty.length; layer++) {
+			empty[layer] = new float[neuronsPerLayer[layer+1]][];
+			for(int folNeuron = 0; folNeuron < empty[layer].length; folNeuron++) {
+				empty[layer][folNeuron] = new float[neuronsPerLayer[layer]];
+			}
+		}
+		if(initRandom) empty = randomize(empty);
+		setCoefficients(empty);
+		if(initRandom) empty = randomize(empty);
+		setConstants(empty);
+	}
+	
+	/**
+	 * Randomizes the float[][][] with values between -1 and 1
+	 * @param in Input
+	 * @return Randomized input with values between -1 and 1
+	 */
+	float[][][] randomize(float[][][] in) {
+		Random random = new Random();
+		for(int i = 0; i < in.length; i++) {
+			for(int ii = 0; ii < in[i].length; ii++) {
+				for(int iii = 0; iii < in[i][ii].length; iii++) {
+					boolean negative = random.nextBoolean();
+					float val = random.nextFloat();
+					if(negative) val *= -1;
+					in[i][ii][iii] = val;
+				}
+			}
+		}
+		return in;
 	}
 	
 	/**
@@ -64,14 +99,17 @@ public class NeuralNetwork {
 			//Set coefficients
 			connectionCoefficients = coefficients;
 			//Set abs coefficients
-			absConnectionCoefficients = new float[coefficients.length][][];
+			absConnectionCoefficientsTotal = new float[coefficients.length][];
 			for(int layer = 0; fine && layer < coefficients.length; layer++) {
-				absConnectionCoefficients[layer] = new float[coefficients[layer].length][];
+				absConnectionCoefficientsTotal[layer] = new float[coefficients[layer].length];
 				for(int folNeuron = 0; fine && folNeuron < coefficients[layer].length; folNeuron++) {
-					absConnectionCoefficients[layer][folNeuron] = new float[coefficients[layer][folNeuron].length];
+					//absConnectionCoefficientsTotal[layer][folNeuron] = new float[coefficients[layer][folNeuron].length];
+					float total = 0;
 					for(int preNeuron = 0; fine && preNeuron < coefficients[layer][folNeuron].length; preNeuron++) {
-						absConnectionCoefficients[layer][folNeuron][preNeuron] = Math.abs(coefficients[layer][folNeuron][preNeuron]);
+						//absConnectionCoefficientsTotal[layer][folNeuron][preNeuron] = Math.abs(coefficients[layer][folNeuron][preNeuron]);
+						total += Math.abs(coefficients[layer][folNeuron][preNeuron]);
 					}
+					absConnectionCoefficientsTotal[layer][folNeuron] = total;
 				}
 			}
 			//Set powish coefficients
@@ -127,17 +165,77 @@ public class NeuralNetwork {
 			//Set constants
 			connectionConstants = constants;
 			//Set per following, neuron abs constant total
-			doubleConstantTotal = new float[constants.length][];
+			doubleConnectionConstants = new float[constants.length][][];
 			for(int layer = 0; fine && layer < constants.length; layer++) {
-				doubleConstantTotal[layer] = new float[constants[layer].length];
+				doubleConnectionConstants[layer] = new float[constants[layer].length][];
 				for(int folNeuron = 0; fine && folNeuron < constants[layer].length; folNeuron++) {
-					float absTotal = 0;
+					doubleConnectionConstants[layer][folNeuron] = new float[constants[layer][folNeuron].length];
 					for(int preNeuron = 0; fine && preNeuron < constants[layer][folNeuron].length; preNeuron++) {
-						absTotal += Math.abs(constants[layer][folNeuron][preNeuron]*3f);
+						doubleConnectionConstants[layer][folNeuron][preNeuron] = Math.abs(constants[layer][folNeuron][preNeuron]);
 					}
-					doubleConstantTotal[layer][folNeuron] = absTotal;
 				}
 			}
 		}
+	}
+
+	/**
+	 * Calculates the value of a layer based on the value of a previous layer and the number of the layer you are calculating.
+	 * @param layer Layer you are trying to calculate the output of.
+	 * @param preLayerOutput The output from the layer previous to this or the input to the network if this is layer 0.
+	 * @return The value of the layer you are trying to calculate.
+	 */
+	public float[] calculateLayerOutput(int layer, float[] preLayerOutput) {
+		//INITIALIZE
+		//Layers and num neurons
+		int outLayer = layer - 1;
+		int inLayer = layer;
+		int outNumNeurons = layerNumNeurons[outLayer];
+		int inNumNeurons = layerNumNeurons[inLayer];
+
+		//Populate outs per in
+		float[][] perInCalcOuts = new float[outNumNeurons][inNumNeurons];
+		for(int inNeuron = 0; inNeuron < inNumNeurons; inNeuron++) perInCalcOuts[inNeuron] = Arrays.copyOf(preLayerOutput, preLayerOutput.length);
+		
+		
+		//CALC
+		//Outs per in calc
+		for(int folNeuron = 0; folNeuron < inNumNeurons; folNeuron++) {
+			for(int preNeuron = 0; preNeuron < outNumNeurons; preNeuron++) {
+				perInCalcOuts[folNeuron][preNeuron] = powishConnectionCoefficients[outLayer][folNeuron][preNeuron] * (perInCalcOuts[folNeuron][preNeuron] + doubleConnectionConstants[outLayer][folNeuron][preNeuron]);
+			}
+		}
+		
+		//Ins averaging
+		float[] dataPreSigmoid = new float[inLayer];
+		for(int folNeuron = 0; folNeuron < inNumNeurons; folNeuron++) {
+			float total = 0;
+			for(int preNeuron = 0; preNeuron < outNumNeurons; preNeuron++) {
+				total += perInCalcOuts[folNeuron][preNeuron];
+			}
+			dataPreSigmoid[folNeuron] = total/absConnectionCoefficientsTotal[outLayer][folNeuron];
+		}
+		
+		//Sigmoid
+		float[] dataPostSigmoid = new float[inLayer];
+		for(int folNeuron = 0; folNeuron < inNumNeurons; folNeuron++) {
+			dataPostSigmoid[folNeuron] = calculateSigmoid(dataPreSigmoid[folNeuron]);
+		}
+		
+		//Return
+		return dataPostSigmoid;
+	}
+	
+	/**
+	 * Runs the input through a modified sigmoid function.
+	 * @param in Input.
+	 * @return Output.
+	 */
+	float calculateSigmoid(float in) {
+		float out = in;
+		out = (float)Math.pow(3, out);
+		out += 1;
+		out = -2/out;
+		out += 1;
+		return out;
 	}
 }
