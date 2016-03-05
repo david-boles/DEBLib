@@ -1,8 +1,8 @@
 package space.davidboles.lib.database;
 
-public class Attribute <T> {
-	private String aID;
-	private T attribute;
+public class Attribute <T> implements Comparable<Attribute<?>>{
+	String aID;
+	T attribute;
 	
 	/**
 	 * Initialize a new Attribute
@@ -13,15 +13,6 @@ public class Attribute <T> {
 	public Attribute (String aID, T attribute) {
 		this.aID = aID;
 		this.attribute = attribute;
-	}
-	
-	/**
-	 * Sets the Attribute instance's ID
-	 * 
-	 * @param aID The new Attribute instance's ID
-	 */
-	public void setAID(String aID) {
-		this.aID = aID;
 	}
 	
 	/**
@@ -49,5 +40,10 @@ public class Attribute <T> {
 	 */
 	public T getAttribute() {
 		return this.attribute;
+	}
+
+	@Override
+	public int compareTo(Attribute<?> o) {
+		return this.aID.compareTo(((Attribute<?>)o).aID);
 	}
 }
