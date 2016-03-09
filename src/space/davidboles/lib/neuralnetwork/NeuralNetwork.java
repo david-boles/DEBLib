@@ -13,17 +13,17 @@ public class NeuralNetwork {
 	int[] layerNumNeurons;
 	
 	/**
-	 * The coefficients of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The neuron of the preceding layer (e.g. the one giving output).
+	 * The scalers of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The neuron of the preceding layer (e.g. the one giving output).
 	 */
-	float[][][] connectionCoefficients;
-	float[][] absConnectionCoefficientsTotal;
-	float[][][] powishConnectionCoefficients;
+	float[][][] connectionScalers;
+	float[][] absConnectionScalersTotal;
+	float[][][] powishConnectionScalers;
 	
 	/**
-	 * The constants of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The neuron of the preceding layer (e.g. the one giving output).
+	 * The offsets of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The neuron of the preceding layer (e.g. the one giving output).
 	 */
-	float[][][] connectionConstants;//TODO rename
-	float[][][] doubleConnectionConstants;
+	float[][][] connectionOffsets;
+	float[][][] doubleConnectionOffsets;
 	
 	public NeuralNetwork(int[] neuronsPerLayer, boolean initRandom) {
 		this.layerNumNeurons = neuronsPerLayer;
@@ -36,9 +36,9 @@ public class NeuralNetwork {
 			}
 		}
 		if(initRandom) empty = randomize(empty);
-		setCoefficients(empty);
+		setScalers(empty);
 		if(initRandom) empty = randomize(empty);
-		setConstants(empty);
+		setOffsets(empty);
 	}
 	
 	/**
@@ -79,32 +79,32 @@ public class NeuralNetwork {
 	}
 	
 	/**
-	 * Sets all the coefficients of the NeuralNetwork.
-	 * @param coefficients The coefficients of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The coefficient for the neuron of the preceding layer (e.g. the one giving output).
+	 * Sets all the scalers of the NeuralNetwork.
+	 * @param scalers The scalers of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The coefficient for the neuron of the preceding layer (e.g. the one giving output).
 	 * @throws IllegalArgumentException Thrown if the length of the arrays do not work or their values are not between -1 and 1 or are 0.
 	 */
-	public void setCoefficients(float[][][] coefficients) throws IllegalArgumentException {
+	public void setScalers(float[][][] scalers) throws IllegalArgumentException {
 		//CHECKS
 		//Init fine variable
 		boolean fine = true;
 		//Check if there are the wrong number of layers
-		if(fine && coefficients.length != layerNumNeurons.length-1) fine = false;
+		if(fine && scalers.length != layerNumNeurons.length-1) fine = false;
 		//Check if there are the wrong number of following neurons
-		for(int layer = 0; fine && layer < coefficients.length; layer++) {
-			if(fine && coefficients[layer].length != layerNumNeurons[layer+1]) fine = false;
+		for(int layer = 0; fine && layer < scalers.length; layer++) {
+			if(fine && scalers[layer].length != layerNumNeurons[layer+1]) fine = false;
 			//Check if there are the wrong number of preceding neurons
-			for(int folNeuron = 0; fine && folNeuron < coefficients[layer].length; folNeuron++) {
-				if(fine && coefficients[layer][folNeuron].length != layerNumNeurons[layer]) fine = false; 
+			for(int folNeuron = 0; fine && folNeuron < scalers[layer].length; folNeuron++) {
+				if(fine && scalers[layer][folNeuron].length != layerNumNeurons[layer]) fine = false; 
 			}
 		}
 		//Throw array length exception
 		if(!fine) throw new IllegalArgumentException("Incorrect array length");
 		
 		//Check values
-		for(int layer = 0; fine && layer < coefficients.length; layer++) {
-			for(int folNeuron = 0; fine && folNeuron < coefficients[layer].length; folNeuron++) {
-				for(int preNeuron = 0; fine && preNeuron < coefficients[layer][folNeuron].length; preNeuron++) {
-					float val = coefficients[layer][folNeuron][preNeuron];
+		for(int layer = 0; fine && layer < scalers.length; layer++) {
+			for(int folNeuron = 0; fine && folNeuron < scalers[layer].length; folNeuron++) {
+				for(int preNeuron = 0; fine && preNeuron < scalers[layer][folNeuron].length; preNeuron++) {
+					float val = scalers[layer][folNeuron][preNeuron];
 					if(fine && (val < -1 || val > 1)) fine = false;
 				}
 			}
@@ -114,30 +114,28 @@ public class NeuralNetwork {
 		
 		//USE
 		if(fine) {
-			//Set coefficients
-			connectionCoefficients = coefficients;
-			//Set abs coefficients
-			absConnectionCoefficientsTotal = new float[coefficients.length][];
-			for(int layer = 0; fine && layer < coefficients.length; layer++) {
-				absConnectionCoefficientsTotal[layer] = new float[coefficients[layer].length];
-				for(int folNeuron = 0; fine && folNeuron < coefficients[layer].length; folNeuron++) {
-					//absConnectionCoefficientsTotal[layer][folNeuron] = new float[coefficients[layer][folNeuron].length];
+			//Set scalers
+			connectionScalers = scalers;
+			//Set abs scalers
+			absConnectionScalersTotal = new float[scalers.length][];
+			for(int layer = 0; fine && layer < scalers.length; layer++) {
+				absConnectionScalersTotal[layer] = new float[scalers[layer].length];
+				for(int folNeuron = 0; fine && folNeuron < scalers[layer].length; folNeuron++) {
 					float total = 0;
-					for(int preNeuron = 0; fine && preNeuron < coefficients[layer][folNeuron].length; preNeuron++) {
-						//absConnectionCoefficientsTotal[layer][folNeuron][preNeuron] = Math.abs(coefficients[layer][folNeuron][preNeuron]);
-						total += Math.abs(coefficients[layer][folNeuron][preNeuron]);
+					for(int preNeuron = 0; fine && preNeuron < scalers[layer][folNeuron].length; preNeuron++) {
+						total += Math.abs(scalers[layer][folNeuron][preNeuron]);
 					}
-					absConnectionCoefficientsTotal[layer][folNeuron] = total;
+					absConnectionScalersTotal[layer][folNeuron] = total;
 				}
 			}
-			//Set powish coefficients
-			powishConnectionCoefficients = new float[coefficients.length][][];
-			for(int layer = 0; fine && layer < coefficients.length; layer++) {
-				powishConnectionCoefficients[layer] = new float[coefficients[layer].length][];
-				for(int folNeuron = 0; fine && folNeuron < coefficients[layer].length; folNeuron++) {
-					powishConnectionCoefficients[layer][folNeuron] = new float[coefficients[layer][folNeuron].length];
-					for(int preNeuron = 0; fine && preNeuron < coefficients[layer][folNeuron].length; preNeuron++) {
-						powishConnectionCoefficients[layer][folNeuron][preNeuron] = UsefulMaths.powish(coefficients[layer][folNeuron][preNeuron], 2);
+			//Set powish scalers
+			powishConnectionScalers = new float[scalers.length][][];
+			for(int layer = 0; fine && layer < scalers.length; layer++) {
+				powishConnectionScalers[layer] = new float[scalers[layer].length][];
+				for(int folNeuron = 0; fine && folNeuron < scalers[layer].length; folNeuron++) {
+					powishConnectionScalers[layer][folNeuron] = new float[scalers[layer][folNeuron].length];
+					for(int preNeuron = 0; fine && preNeuron < scalers[layer][folNeuron].length; preNeuron++) {
+						powishConnectionScalers[layer][folNeuron][preNeuron] = UsefulMaths.powish(scalers[layer][folNeuron][preNeuron], 2);
 					}
 				}
 			}
@@ -145,40 +143,40 @@ public class NeuralNetwork {
 	}
 	
 	/**
-	 * Creates and returns a copy of the current coefficients.
-	 * @return The coefficients of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The coefficient for the neuron of the preceding layer (e.g. the one giving output).
+	 * Creates and returns a copy of the current scalers.
+	 * @return The scalers of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The coefficient for the neuron of the preceding layer (e.g. the one giving output).
 	 */
-	public float[][][] getCoefficients() {
-		return ArrayFs.copyTFA(this.connectionCoefficients);
+	public float[][][] getScalers() {
+		return ArrayFs.copyTFA(this.connectionScalers);
 	}
 	
 	/**
-	 * Sets all the constants of the NeuralNetwork.
-	 * @param constants The constants of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The neuron of the preceding layer (e.g. the one giving output).
+	 * Sets all the offsets of the NeuralNetwork.
+	 * @param offsets The offsets of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The neuron of the preceding layer (e.g. the one giving output).
 	 * @throws IllegalArgumentException Thrown if the length of the arrays do not work or their values are not between -1 and 1.
 	 */
-	public void setConstants(float[][][] constants) throws IllegalArgumentException {
+	public void setOffsets(float[][][] offsets) throws IllegalArgumentException {
 		//CHECKS
 		//Init fine variable
 		boolean fine = true;
 		//Check if there are the wrong number of layers
-		if(fine && constants.length != layerNumNeurons.length-1) fine = false;
+		if(fine && offsets.length != layerNumNeurons.length-1) fine = false;
 		//Check if there are the wrong number of following neurons
-		for(int layer = 0; fine && layer < constants.length; layer++) {
-			if(fine && constants[layer].length != layerNumNeurons[layer+1]) fine = false;
+		for(int layer = 0; fine && layer < offsets.length; layer++) {
+			if(fine && offsets[layer].length != layerNumNeurons[layer+1]) fine = false;
 			//Check if there are the wrong number of preceding neurons
-			for(int folNeuron = 0; fine && folNeuron < constants[layer].length; folNeuron++) {
-				if(fine && constants[layer][folNeuron].length != layerNumNeurons[layer]) fine = false; 
+			for(int folNeuron = 0; fine && folNeuron < offsets[layer].length; folNeuron++) {
+				if(fine && offsets[layer][folNeuron].length != layerNumNeurons[layer]) fine = false; 
 			}
 		}
 		//Throw array length exception
 		if(!fine) throw new IllegalArgumentException("Incorrect array length");
 		
 		//Check values
-		for(int layer = 0; fine && layer < constants.length; layer++) {
-			for(int folNeuron = 0; fine && folNeuron < constants[layer].length; folNeuron++) {
-				for(int preNeuron = 0; fine && preNeuron < constants[layer][folNeuron].length; preNeuron++) {
-					float val = constants[layer][folNeuron][preNeuron];
+		for(int layer = 0; fine && layer < offsets.length; layer++) {
+			for(int folNeuron = 0; fine && folNeuron < offsets[layer].length; folNeuron++) {
+				for(int preNeuron = 0; fine && preNeuron < offsets[layer][folNeuron].length; preNeuron++) {
+					float val = offsets[layer][folNeuron][preNeuron];
 					if(fine && (val < -1 || val > 1)) fine = false;
 				}
 			}
@@ -188,17 +186,17 @@ public class NeuralNetwork {
 		
 		//USE
 		if(fine) {
-			//Set constants
-			connectionConstants = constants;
+			//Set offsets
+			connectionOffsets = offsets;
 			//Set per following, neuron abs constant total
-			doubleConnectionConstants = new float[constants.length][][];
-			for(int layer = 0; fine && layer < constants.length; layer++) {
-				doubleConnectionConstants[layer] = new float[constants[layer].length][];
-				for(int folNeuron = 0; fine && folNeuron < constants[layer].length; folNeuron++) {
-					doubleConnectionConstants[layer][folNeuron] = new float[constants[layer][folNeuron].length];
-					for(int preNeuron = 0; fine && preNeuron < constants[layer][folNeuron].length; preNeuron++) {
-						float abs = Math.abs(constants[layer][folNeuron][preNeuron]);
-						doubleConnectionConstants[layer][folNeuron][preNeuron] = abs;//TODO
+			doubleConnectionOffsets = new float[offsets.length][][];
+			for(int layer = 0; fine && layer < offsets.length; layer++) {
+				doubleConnectionOffsets[layer] = new float[offsets[layer].length][];
+				for(int folNeuron = 0; fine && folNeuron < offsets[layer].length; folNeuron++) {
+					doubleConnectionOffsets[layer][folNeuron] = new float[offsets[layer][folNeuron].length];
+					for(int preNeuron = 0; fine && preNeuron < offsets[layer][folNeuron].length; preNeuron++) {
+						float abs = Math.abs(offsets[layer][folNeuron][preNeuron]);
+						doubleConnectionOffsets[layer][folNeuron][preNeuron] = abs;//TODO
 					}
 				}
 			}
@@ -206,11 +204,11 @@ public class NeuralNetwork {
 	}
 
 	/**
-	 * Creates and returns a copy of the current constants.
-	 * @return The constants of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The neuron of the preceding layer (e.g. the one giving output).
+	 * Creates and returns a copy of the current offsets.
+	 * @return The offsets of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The neuron of the preceding layer (e.g. the one giving output).
 	 */
-	public float[][][] getConstants() {
-		return ArrayFs.copyTFA(this.connectionConstants);
+	public float[][][] getOffsets() {
+		return ArrayFs.copyTFA(this.connectionOffsets);
 	}
 	
 	/**
@@ -243,7 +241,7 @@ public class NeuralNetwork {
 		//Outs per in calc
 		for(int folNeuron = 0; folNeuron < inNumNeurons; folNeuron++) {
 			for(int preNeuron = 0; preNeuron < outNumNeurons; preNeuron++) {
-				perInCalcOuts[folNeuron][preNeuron] = powishConnectionCoefficients[outLayer][folNeuron][preNeuron] * (perInCalcOuts[folNeuron][preNeuron] + doubleConnectionConstants[outLayer][folNeuron][preNeuron]);
+				perInCalcOuts[folNeuron][preNeuron] = powishConnectionScalers[outLayer][folNeuron][preNeuron] * (perInCalcOuts[folNeuron][preNeuron] + doubleConnectionOffsets[outLayer][folNeuron][preNeuron]);
 			}
 		}
 		
@@ -254,7 +252,7 @@ public class NeuralNetwork {
 			for(int preNeuron = 0; preNeuron < outNumNeurons; preNeuron++) {
 				total += perInCalcOuts[folNeuron][preNeuron];
 			}
-			dataPreSigmoid[folNeuron] = total/absConnectionCoefficientsTotal[outLayer][folNeuron];
+			dataPreSigmoid[folNeuron] = total/absConnectionScalersTotal[outLayer][folNeuron];
 		}
 		
 		//Sigmoid

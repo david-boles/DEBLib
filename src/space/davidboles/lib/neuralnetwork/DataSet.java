@@ -24,7 +24,6 @@ public class DataSet {
 		}else throw new IllegalArgumentException("Data array lengths do not correspond to the number of input or output neurons.");
 	}
 	
-	
 	public float[][][] getDataCopy() {
 		return new float[][][]{ArrayFs.copyDFA(inputData), ArrayFs.copyDFA(targetData)};
 	}
