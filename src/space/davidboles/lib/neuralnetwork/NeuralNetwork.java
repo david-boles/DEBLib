@@ -3,6 +3,7 @@ package space.davidboles.lib.neuralnetwork;
 import java.util.Arrays;
 import java.util.Random;
 
+import space.davidboles.lib.math.ArrayFs;
 import space.davidboles.lib.math.UsefulMaths;
 
 public class NeuralNetwork {
@@ -12,7 +13,7 @@ public class NeuralNetwork {
 	int[] layerNumNeurons;
 	
 	/**
-	 * The coefficients of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The coefficient for the neuron of the preceding layer (e.g. the one giving output).
+	 * The coefficients of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The neuron of the preceding layer (e.g. the one giving output).
 	 */
 	float[][][] connectionCoefficients;
 	float[][] absConnectionCoefficientsTotal;
@@ -21,7 +22,7 @@ public class NeuralNetwork {
 	/**
 	 * The constants of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The neuron of the preceding layer (e.g. the one giving output).
 	 */
-	float[][][] connectionConstants;
+	float[][][] connectionConstants;//TODO rename
 	float[][][] doubleConnectionConstants;
 	
 	public NeuralNetwork(int[] neuronsPerLayer, boolean initRandom) {
@@ -38,6 +39,23 @@ public class NeuralNetwork {
 		setCoefficients(empty);
 		if(initRandom) empty = randomize(empty);
 		setConstants(empty);
+	}
+	
+	/**
+	 * Calculates the output of the NeuralNetwork off of input data. This method is not input safe e.g. it modifies the input array object.
+	 * @param data Input data, length must be equal to the number of neurons in the 0th layer.
+	 * @return The processed output data.
+	 * @throws IllegalArgumentException
+	 */
+	public float[] process(float[] data) throws IllegalArgumentException {
+		if(data.length == layerNumNeurons[0]) {
+			for(int l = 1; l < layerNumNeurons.length; l++) {
+				data = calculateLayerOutput(l, data);
+			}
+			return data;
+		}else {
+			throw new IllegalArgumentException("Invalid input data length, diffent that number of neurons in layer 0");
+		}
 	}
 	
 	/**
@@ -127,6 +145,14 @@ public class NeuralNetwork {
 	}
 	
 	/**
+	 * Creates and returns a copy of the current coefficients.
+	 * @return The coefficients of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The coefficient for the neuron of the preceding layer (e.g. the one giving output).
+	 */
+	public float[][][] getCoefficients() {
+		return ArrayFs.copyTFA(this.connectionCoefficients);
+	}
+	
+	/**
 	 * Sets all the constants of the NeuralNetwork.
 	 * @param constants The constants of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The neuron of the preceding layer (e.g. the one giving output).
 	 * @throws IllegalArgumentException Thrown if the length of the arrays do not work or their values are not between -1 and 1.
@@ -171,13 +197,22 @@ public class NeuralNetwork {
 				for(int folNeuron = 0; fine && folNeuron < constants[layer].length; folNeuron++) {
 					doubleConnectionConstants[layer][folNeuron] = new float[constants[layer][folNeuron].length];
 					for(int preNeuron = 0; fine && preNeuron < constants[layer][folNeuron].length; preNeuron++) {
-						doubleConnectionConstants[layer][folNeuron][preNeuron] = Math.abs(constants[layer][folNeuron][preNeuron]);
+						float abs = Math.abs(constants[layer][folNeuron][preNeuron]);
+						doubleConnectionConstants[layer][folNeuron][preNeuron] = abs;//TODO
 					}
 				}
 			}
 		}
 	}
 
+	/**
+	 * Creates and returns a copy of the current constants.
+	 * @return The constants of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The neuron of the preceding layer (e.g. the one giving output).
+	 */
+	public float[][][] getConstants() {
+		return ArrayFs.copyTFA(this.connectionConstants);
+	}
+	
 	/**
 	 * Calculates the value of a layer based on the value of a previous layer and the number of the layer you are calculating.
 	 * @param layer Layer you are trying to calculate the output of.
@@ -192,8 +227,15 @@ public class NeuralNetwork {
 		int outNumNeurons = layerNumNeurons[outLayer];
 		int inNumNeurons = layerNumNeurons[inLayer];
 
+		/*System.out.println("calc");
+		System.out.println(layer);
+		System.out.println(outLayer);
+		System.out.println(inLayer);
+		System.out.println(outNumNeurons);
+		System.out.println(inNumNeurons);*/
+		
 		//Populate outs per in
-		float[][] perInCalcOuts = new float[outNumNeurons][inNumNeurons];
+		float[][] perInCalcOuts = new float[inNumNeurons][outNumNeurons];
 		for(int inNeuron = 0; inNeuron < inNumNeurons; inNeuron++) perInCalcOuts[inNeuron] = Arrays.copyOf(preLayerOutput, preLayerOutput.length);
 		
 		
@@ -206,7 +248,7 @@ public class NeuralNetwork {
 		}
 		
 		//Ins averaging
-		float[] dataPreSigmoid = new float[inLayer];
+		float[] dataPreSigmoid = new float[inNumNeurons];
 		for(int folNeuron = 0; folNeuron < inNumNeurons; folNeuron++) {
 			float total = 0;
 			for(int preNeuron = 0; preNeuron < outNumNeurons; preNeuron++) {
@@ -216,7 +258,7 @@ public class NeuralNetwork {
 		}
 		
 		//Sigmoid
-		float[] dataPostSigmoid = new float[inLayer];
+		float[] dataPostSigmoid = new float[inNumNeurons];
 		for(int folNeuron = 0; folNeuron < inNumNeurons; folNeuron++) {
 			dataPostSigmoid[folNeuron] = calculateSigmoid(dataPreSigmoid[folNeuron]);
 		}
@@ -231,11 +273,13 @@ public class NeuralNetwork {
 	 * @return Output.
 	 */
 	float calculateSigmoid(float in) {
+		//System.out.println("IN:" + in);
 		float out = in;
 		out = (float)Math.pow(3, out);
 		out += 1;
 		out = -2/out;
 		out += 1;
+		//System.out.println("OUT:" + out);
 		return out;
 	}
 }

@@ -1,5 +1,7 @@
 package space.davidboles.lib.math;
 
+import java.util.Random;
+
 public class UsefulMaths {
 	
 	/**
@@ -17,5 +19,18 @@ public class UsefulMaths {
 		float out = (float) Math.pow(base, exponent);
 		if(negative) out *= -1;
 		return out;
+	}
+	
+	static Random random = new Random();
+	public static float unitRandom() {
+		float value = random.nextFloat();
+		if(random.nextBoolean()) value *= -1;
+		return value;
+	}
+	
+	public static float boundInclusive(float in, float lower, float upper) {
+		if(in < lower) in = lower;
+		if(in > upper) in = upper;
+		return in;
 	}
 }

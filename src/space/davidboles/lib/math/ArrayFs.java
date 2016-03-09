@@ -56,4 +56,29 @@ public class ArrayFs {
 	    return c;
 	}
 	
+	public static float[][][] copyTFA(float[][][] in) {
+		float[][][] out = new float[in.length][][];
+		for(int i = 0; i < in.length; i++) {
+			out[i] = new float[in[i].length][];
+			for(int ii = 0; ii < in[i].length; ii++) {
+				out[i][ii] = new float[in[i][ii].length];
+				for(int iii = 0; iii < in[i][ii].length; iii++) {
+					out[i][ii][iii] = in[i][ii][iii];
+				}
+			}
+		}
+		return out;
+	}
+	
+	public static float[][] copyDFA(float[][] in) {
+		float[][] out = new float[in.length][];
+		for(int i = 0; i < in.length; i++) {
+			out[i] = new float[in[i].length];
+			for(int ii = 0; ii < in[i].length; ii++) {
+				out[i][ii] = in[i][ii];
+			}
+		}
+		return out;
+	}
+	
 }
