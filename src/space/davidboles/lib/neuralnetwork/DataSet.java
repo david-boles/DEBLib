@@ -7,10 +7,13 @@ public class DataSet {
 	final int outputNumNeurons;
 	float[][] inputData;
 	float[][] targetData;
+	int dataPos = 0;
 	
 	public DataSet(int inputNumNeurons, int outputNumNeurons) {
 		this.inputNumNeurons = inputNumNeurons;
 		this.outputNumNeurons = outputNumNeurons;
+		inputData = new float[0][];
+		targetData = new float[0][];
 	}
 	
 	public void addDataItem(float[] input, float[] targetOut) throws IllegalArgumentException {
@@ -19,6 +22,11 @@ public class DataSet {
 			float[][] newTarg = new float[targetData.length+1][];
 			newIn[inputData.length] = input;
 			newTarg[targetData.length] = targetOut;
+			//TODO add old data
+			for(int i = 0; i < inputData.length; i++) {
+				newIn[i] = this.inputData[i];
+				newTarg[i] = this.targetData[i];
+			}
 			this.inputData = newIn;
 			this.targetData = newTarg;
 		}else throw new IllegalArgumentException("Data array lengths do not correspond to the number of input or output neurons.");
@@ -28,4 +36,10 @@ public class DataSet {
 		return new float[][][]{ArrayFs.copyDFA(inputData), ArrayFs.copyDFA(targetData)};
 	}
 	
+	public float[][] getNextData() {
+		float[][] out = new float[][]{this.inputData[this.dataPos], this.targetData[this.dataPos]};
+		this.dataPos++;
+		this.dataPos %= this.inputData.length;
+		return out;
+	}
 }

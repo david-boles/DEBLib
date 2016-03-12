@@ -217,20 +217,13 @@ public class NeuralNetwork {
 	 * @param preLayerOutput The output from the layer previous to this or the input to the network if this is layer 0.
 	 * @return The value of the layer you are trying to calculate.
 	 */
-	public float[] calculateLayerOutput(int layer, float[] preLayerOutput) {
+	float[] calculateLayerOutput(int layer, float[] preLayerOutput) {
 		//INITIALIZE
 		//Layers and num neurons
 		int outLayer = layer - 1;
 		int inLayer = layer;
 		int outNumNeurons = layerNumNeurons[outLayer];
 		int inNumNeurons = layerNumNeurons[inLayer];
-
-		/*System.out.println("calc");
-		System.out.println(layer);
-		System.out.println(outLayer);
-		System.out.println(inLayer);
-		System.out.println(outNumNeurons);
-		System.out.println(inNumNeurons);*/
 		
 		//Populate outs per in
 		float[][] perInCalcOuts = new float[inNumNeurons][outNumNeurons];

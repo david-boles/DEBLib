@@ -4,12 +4,11 @@ import space.davidboles.lib.program.Logger;
 
 public abstract class Learner {
 	
-	Logger logger = Logger.uLogger;
+	protected Logger logger = Logger.uLogger;
 	
-	NeuralNetwork nn;
-	float[][] inputDataSet;
-	float[][] targetDataSet;
-	int dataSetPosition = 0;
+	protected NeuralNetwork nn;
+	protected float[][] inputDataSet;
+	protected float[][] targetDataSet;
 	
 	public Learner(NeuralNetwork neuralNetwork, DataSet dataSet) throws IllegalArgumentException {
 		if(dataSet.inputData.length > 0 && dataSet.inputNumNeurons == neuralNetwork.layerNumNeurons[0] && dataSet.outputNumNeurons == neuralNetwork.layerNumNeurons[neuralNetwork.layerNumNeurons.length-1]) {
@@ -23,14 +22,20 @@ public abstract class Learner {
 	public void learn(int iterations) {
 		logger.vLog("Starting learning iterations", iterations);
 		for(int i = 0; i < iterations; i++) {
-			learnSingle(inputDataSet[dataSetPosition], targetDataSet[dataSetPosition]);
+			learnSingle();
+			logger.vLog("Completed interation", i);
 		}
+		RatedConstants best = this.getBest();
+		this.nn.setOffsets(best.connectionOffsets);
+		this.nn.setScalers(best.connectionScalers);
 	}
 	
-	abstract void learnSingle(float[] input, float[] target);
+	protected abstract void learnSingle();
 	
 	public Learner setLogger(Logger logger) {
 		this.logger = logger;
 		return this;
 	}
+	
+	protected abstract RatedConstants getBest();
 }
