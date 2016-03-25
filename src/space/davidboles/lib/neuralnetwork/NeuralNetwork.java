@@ -16,7 +16,7 @@ public class NeuralNetwork {
 	 * The scalers of the connections between layers. []--: From 0, the layer of connections (e.g. the number of the preceding layer). -[]-: The neuron of the following layer (e.g. the one getting input). --[]: The neuron of the preceding layer (e.g. the one giving output).
 	 */
 	float[][][] connectionScalers;
-	float[][] absConnectionScalersTotal;
+	float[][] absConnectionScalersTotal;//TODO make from powish?
 	float[][][] powishConnectionScalers;
 	
 	/**

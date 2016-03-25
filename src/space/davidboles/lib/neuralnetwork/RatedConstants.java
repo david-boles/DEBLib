@@ -12,6 +12,7 @@ public class RatedConstants {
 	public RatedConstants(float[][][] connectionScalers, float[][][] connectionOffsets) {
 		this.connectionOffsets = connectionOffsets;
 		this.connectionScalers = connectionScalers;
+		this.accuracy = 0;
 	}
 	
 	public RatedConstants(float[][][] connectionScalers, float[][][] connectionOffsets, float[] output, float[] target) {
@@ -57,6 +58,21 @@ public class RatedConstants {
 				for(int iii = 0; iii < copy.connectionScalers[i][ii].length; iii++) {
 					copy.connectionScalers[i][ii][iii] = ((UsefulMaths.unitRandom()*randomization)+(this.connectionScalers[i][ii][iii]*unRand));
 					copy.connectionOffsets[i][ii][iii] = ((UsefulMaths.unitRandom()*randomization)+(this.connectionOffsets[i][ii][iii]*unRand));
+				}
+			}
+		}
+		
+		return copy;
+	}
+	
+	public RatedConstants getCopy() {
+		RatedConstants copy = new RatedConstants(ArrayFs.copyTFA(this.connectionScalers), ArrayFs.copyTFA(this.connectionOffsets));
+		
+		for(int i = 0; i < copy.connectionScalers.length; i++) {
+			for(int ii = 0; ii < copy.connectionScalers[i].length; ii++) {
+				for(int iii = 0; iii < copy.connectionScalers[i][ii].length; iii++) {
+					copy.connectionScalers[i][ii][iii] = this.connectionScalers[i][ii][iii];
+					copy.connectionOffsets[i][ii][iii] = this.connectionOffsets[i][ii][iii];
 				}
 			}
 		}
