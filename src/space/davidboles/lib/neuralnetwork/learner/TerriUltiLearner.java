@@ -45,7 +45,7 @@ public class TerriUltiLearner extends Learner {
 		int totalIt = this.calcTotalPossible(allCs);
 		System.out.println(totalIt);
 		try {
-	+		Thread.sleep(2000);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -70,6 +70,8 @@ public class TerriUltiLearner extends Learner {
 			terminated = overfIncrementPos(allCs, 0, 0, 0, 0);
 		}
 		System.out.println("Best acc" + this.bestTested.accuracy);
+		System.out.println(this.bestTested.connectionOffsets[0][0][0]);
+		System.out.println(this.bestTested.connectionScalers[0][0][0]);
 	}
 	
 	protected void testSingle(RatedConstants current) {
@@ -142,7 +144,7 @@ public class TerriUltiLearner extends Learner {
 	}
 
 	@Override
-	protected RatedConstants getBest() {
+	public RatedConstants getBest() {
 		return bestTested;
 	}
 

@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 
@@ -93,7 +94,7 @@ public class ProgramFs {
 		}
 	}
 	
-	public static boolean saveObject(File file, Object object) {
+	public static <T extends Serializable> boolean saveObject(File file, T object) {
 		try {
 			ObjectOutputStream oout = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream(file)));
 			oout.writeObject(object);

@@ -39,5 +39,5 @@ public abstract class Learner {
 		return this;
 	}
 	
-	protected abstract RatedConstants getBest();
+	public abstract RatedConstants getBest();
 }

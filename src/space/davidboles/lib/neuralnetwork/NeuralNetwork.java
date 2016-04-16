@@ -264,13 +264,15 @@ public class NeuralNetwork {
 	 * @return Output.
 	 */
 	float calculateSigmoid(float in) {
+		//System.out.println("Sig in: " + in);
 		//System.out.println("IN:" + in);
 		float out = in;
-		out = (float)Math.pow(3, out);
+		out = (float)Math.pow(20, out);
 		out += 1;
 		out = -2/out;
 		out += 1;
 		//System.out.println("OUT:" + out);
+		//System.out.println("Sig out: " + out);
 		return out;
 	}
 }

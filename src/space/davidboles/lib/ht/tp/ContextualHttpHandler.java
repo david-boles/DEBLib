@@ -21,6 +21,13 @@ public abstract class ContextualHttpHandler implements HttpHandler {
         OutputStream os = t.getResponseBody();
         os.write(error404.getBytes());
         os.close();
-  }
+	}
+	
+	public void writeTextResponse(com.sun.net.httpserver.HttpExchange t, String data) throws IOException {
+		t.sendResponseHeaders(200, 0);
+        OutputStream os = t.getResponseBody();
+        os.write(data.getBytes());
+        os.close();
+	}
 
 }

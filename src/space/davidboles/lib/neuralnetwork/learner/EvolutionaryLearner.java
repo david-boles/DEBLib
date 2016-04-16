@@ -78,7 +78,7 @@ public class EvolutionaryLearner extends Learner {
 	}
 	
 	@Override
-	protected RatedConstants getBest() {
+	public RatedConstants getBest() {
 		int highestPos = 0;
 		for(int i = 0; i < this.currentConstants.size(); i++) {
 			RatedConstants current = this.currentConstants.get(i);
