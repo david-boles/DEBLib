@@ -35,6 +35,18 @@ public class AudioFs {
 		return b.array();
 	}
 	
+	public static void printSamples(double[] samples) {
+		for(int samp = 0; samp < samples.length; samp++) {
+			int dashes = (int) ((samples[samp]+1.0)*16.0);
+			for(int dash = 0; dash < dashes; dash++) {
+				if(dash == 16) System.out.print("|");
+				System.out.print("-");
+			}
+			
+			System.out.println(samples[samp]);
+		}
+	}
+	
 	@Deprecated
 	public static double frequencyProbability(double[] in, int samplesPS, double frequency) {
 		int samplesPC = (int) (samplesPS/frequency);

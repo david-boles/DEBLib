@@ -1,17 +1,20 @@
 package space.davidboles.lib.database;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.TreeSet;
 
 
-public class AttributesList {
-	private TreeSet<Attribute<?>> attributes = new TreeSet<Attribute<?>>();
+public class AttributesList implements Serializable {
+	private static final long serialVersionUID = 1L;
+	protected TreeSet<Attribute<? extends Serializable>> attributes = new TreeSet<Attribute<? extends Serializable>>();
 	
 	/**
 	 * Adds or updates an attribute.
 	 * @param a The attribute you are adding or setting.
 	 * @return true if this attribute existed in the AttributeList already.
 	 */
-	public boolean addSet(Attribute<?> a) {
+	public boolean addSet(Attribute<? extends Serializable> a) {
 		synchronized(this.attributes) {
 			boolean removed = this.attributes.removeIf(new AttributePredicate(a.aID));
 			this.attributes.add(a);
@@ -25,7 +28,7 @@ public class AttributesList {
 	 * @param data The value of your attribute.
 	 * @return What addSet() returns from the new AttributeObject, true if this attribute existed in the AttributeList already.
 	 */
-	public <T> boolean addSet(String id, T data) {
+	public <T extends Serializable> boolean addSet(String id, T data) {
 		synchronized(this.attributes) {
 			return this.addSet(new Attribute<T>(id, data));
 		}
@@ -49,7 +52,7 @@ public class AttributesList {
 	 * @throws ClassCastException If the type of the value of the attribute is not a subtype of the provided type.
 	 */
 	@SuppressWarnings("unchecked")//TODO see if throwing works
-	public <T> Attribute<T> getAttribute(String id) throws ClassCastException {
+	public <T extends Serializable> Attribute<T> getAttribute(String id) throws ClassCastException {
 		synchronized(this.attributes) {
 			Attribute<?> a = this.attributes.ceiling(new Attribute<T>(id, null));
 			if(a.aID.equals(id)) return (Attribute<T>) a;
@@ -61,10 +64,19 @@ public class AttributesList {
 	 * Copies the AttributeList into an Array.
 	 * @return The copy of the AttributeList.
 	 */
-	public Attribute<?>[] getAllSafe() {
+	public Attribute<? extends Serializable>[] getAllSafe() {
 		synchronized(this.attributes) {
 			return this.attributes.toArray(new Attribute<?>[this.attributes.size()]);
 		}
+	}
+	
+	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+		out.writeObject(this.attributes);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+		this.attributes = (TreeSet<Attribute<? extends Serializable>>) in.readObject();
 	}
 
 }

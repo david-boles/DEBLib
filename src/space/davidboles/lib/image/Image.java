@@ -1,30 +1,29 @@
 package space.davidboles.lib.image;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-public abstract class Image {
+public class Image {
 	BufferedImage image;
 	
-	public Image(int width, int height) {
+	public Image(int width, int height, int type) {
 		this.image = new BufferedImage(width, height, this.getType());
 	}
 	
-	public Image(File f) {
-		this.readImage(f);
+	public Image(File f) throws IOException {
+		this.image = ImageIO.read(f);
 	}
 	
 	public Image(Image i) {
-		this.image = this.convertToThisType(i.image);
+		this.image = ImageFs.copyToType(i.image, i.getType());
 	}
 	
 	public Image(BufferedImage i) {
-		this.image = this.convertToThisType(i);
+		this.image = ImageFs.copyToType(i, i.getType());
 	}
 	
 	/** 
@@ -32,58 +31,17 @@ public abstract class Image {
 	 * 
 	 * @return The type as defined by BufferedImage.TYPE_...
 	 */
-	public abstract int getType();
-	
-	public boolean applyImageTransform(ImageTransform i) {
-		if(i.getType() == this.getType() || i.getType() == -1) {
-			return i.applyTransformation(this.image);
-		}
-		return false;
+	public int getType() {
+		return this.image.getType();
 	}
 	
 	/**
-	 * Convert specified image to specified type
-	 * 
-	 * @param image The starting image
-	 * @param type The type as defined by BufferedImage.TYPE_...
-	 * @return A new BufferedImage with image image and type type
+	 * Returns a new image with the results from the transformation.
+	 * @param tranformation
+	 * @return New Image.
 	 */
-	public static BufferedImage convertToType(BufferedImage image, int type) {
-	    BufferedImage newImage = new BufferedImage(
-	        image.getWidth(), image.getHeight(),
-	        type);
-	    Graphics2D g = newImage.createGraphics();
-	    g.drawImage(image, 0, 0, null);
-	    g.dispose();
-	    return newImage;
-	}
-	
-	/**
-	 * Convert specified image to type this.getType()
-	 * 
-	 * @param image The starting image
-	 * @return A new BufferedImage with image image and type this.getType()
-	 */
-	public BufferedImage convertToThisType(BufferedImage image) {
-		return convertToType(image, this.getType());
-	}
-
-	public boolean readImage(File f) {
-		try {
-		    this.image = this.convertToThisType(ImageIO.read(f));
-		    return true;
-		} catch (IOException e) {
-			return false;
-		}
-	}
-	
-	public boolean writeImage(String type, File f) {
-		try {
-		    ImageIO.write(this.convertToThisType(image), type, f);
-		    return true;
-		} catch (IOException e) {
-			return false;
-		}
+	public void applyImageTransform(ImageTransform tranform) {
+		this.image = tranform.makeTransformedImage(this).image;
 	}
 
 	public void setPixel(int x, int y, Color c) {
@@ -104,10 +62,15 @@ public abstract class Image {
 	}
 	
 	public BufferedImage getBufImageCopy() {
-		return this.convertToThisType(this.image);
+		return ImageFs.copyToType(this.image, this.image.getType());
 	}
 	
 	public void setBufImageCopy(BufferedImage i) {
-		this.image = this.convertToThisType(this.image);
+		this.image = ImageFs.copyToType(i, i.getType());
+	}
+	
+	public Image getVersionWithType(int type) {
+		if(this.getType() == type) return this;
+		return new Image(ImageFs.copyToType(this.image, type));
 	}
 }

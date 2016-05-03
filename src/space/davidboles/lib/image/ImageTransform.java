@@ -2,35 +2,14 @@ package space.davidboles.lib.image;
 
 import java.awt.image.BufferedImage;
 
-public abstract class ImageTransform {
+public interface ImageTransform {
 	
 	/**
-	 * Type of the transformation
+	 * Applies the transformation to an Image, returns the result.
 	 * 
-	 * @return The type as defined by BufferedImage.TYPE_..., -1 if unimportant.
+	 * @param i The Image to which the transformation is applied.
+	 * @return A new Image with the results from the transformation.
 	 */
-	public abstract int getType();
-	
-	/**
-	 * Public transformation application, checks type
-	 * 
-	 * @param i The image to which the transformation is applied
-	 * @return True if applied, false if incorrect type
-	 */
-	public boolean applyTransformation(BufferedImage i) {
-		if(i.getType() == this.getType() || i.getType() == -1) {
-			this.applyTransformationChecked(i);
-			return true;
-		}else {
-			return false;
-		}
-	}
-	
-	/**
-	 * Private transformation application, called if applyTransformation finds the image has the right type
-	 * 
-	 * @param i The image to which the transformation is applied
-	 */
-	abstract void applyTransformationChecked(BufferedImage i);
+	public abstract Image makeTransformedImage(Image i);
 	
 }

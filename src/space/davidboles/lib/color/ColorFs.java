@@ -30,11 +30,11 @@ public class ColorFs {
 		if (in <= 0 && in >= 255) return in;
 		if (in > 255) return 255;
 		if (in < 0) return 0;
-		else return 0;
+		else return in;
 	}
 	
-	public static Color mixColors(Color[] c, Float[] v) {
-		if(c.length != v.length) return null;
+	public static Color mixColorComps(Color[] c, Double[] v) {
+		if(c.length != v.length) if(c.length != v.length) throw new IllegalArgumentException("Colors length and scale length do not match.");
 		
 		//Output color component variables
 		int outA = 0;
@@ -55,6 +55,27 @@ public class ColorFs {
 		outB = boundComponentRound(outB);
 		
 		return new Color(outR, outG, outB, outA);
+	}
+	
+	public static Color mixColorRGB(Color[] c, Double[] v) {
+		if(c.length != v.length) throw new IllegalArgumentException("Colors length and scale length do not match.");
+		
+		//Output color component variables
+		int outR = 0;
+		int outG = 0;
+		int outB = 0;
+		
+		for(int i = 0; i < c.length; i++) {
+			outR += c[i].getRed() * v[i] * (c[i].getAlpha()/255.0);
+			outG += c[i].getGreen() * v[i] * (c[i].getAlpha()/255.0);
+			outB += c[i].getBlue() * v[i] * (c[i].getAlpha()/255.0);
+		}
+		
+		outR = boundComponentRound(outR);
+		outG = boundComponentRound(outG);
+		outB = boundComponentRound(outB);
+		
+		return new Color(outR, outG, outB);
 	}
 	
 }

@@ -1,6 +1,10 @@
 package space.davidboles.lib.database;
 
-public class Attribute <T> implements Comparable<Attribute<?>>{
+import java.io.IOException;
+import java.io.Serializable;
+
+public class Attribute <T extends Serializable> implements Comparable<Attribute<? extends Serializable>>, Serializable{
+	private static final long serialVersionUID = 1L;
 	String aID;
 	T attribute;
 	
@@ -18,10 +22,10 @@ public class Attribute <T> implements Comparable<Attribute<?>>{
 	/**
 	 * Gets the Attribute instance's ID
 	 * 
-	 * @return The Attribute instance's ID
+	 * @return A copy of the Attribute instance's ID
 	 */
 	public String getAID() {
-		return this.aID;
+		return this.aID;//TODO Needs to be a copy
 	}
 	
 	/**
@@ -43,7 +47,19 @@ public class Attribute <T> implements Comparable<Attribute<?>>{
 	}
 
 	@Override
-	public int compareTo(Attribute<?> o) {
-		return this.aID.compareTo(((Attribute<?>)o).aID);
+	public int compareTo(Attribute<? extends Serializable> o) {
+		return this.aID.compareTo(((Attribute<? extends Serializable>)o).aID);
 	}
+	
+	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+		out.writeObject(this.aID);
+		out.writeObject(this.attribute);
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+		this.aID = (String) in.readObject();
+		this.attribute = (T) in.readObject();
+	}
+	
 }

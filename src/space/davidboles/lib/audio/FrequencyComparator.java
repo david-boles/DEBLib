@@ -1,84 +1,75 @@
 package space.davidboles.lib.audio;
 
-import java.util.ArrayList;
-
-import space.davidboles.lib.math.ArrayFs;
-
 public class FrequencyComparator {
-	ArrayList<Double> refF = new ArrayList<Double>();
-	ArrayList<Integer> refSPS = new ArrayList<Integer>();
-	ArrayList<double[]> refs = new ArrayList<double[]>();
+	final double testFreq;
+	final int testSPS;
+	final int testSPC;
+	final int testSPQC;
+	public final double[] testSample;//TODO remove public
 	
-	public void addReference(int samplesPS, double frequency) {
-		for (int i = 0; i < refF.size(); i++) {
-			if (refF.get(i) == frequency && refSPS.get(i) == samplesPS) return;
-		}
-		
-		refs.add(new SinGenerator().generateDToneSamples(samplesPS, frequency, (int)(samplesPS/frequency)));
-		refF.add(frequency);
-		refSPS.add(samplesPS);
+	public FrequencyComparator(double testFrequency, int testSamplesPerSecond) {
+		this.testFreq = testFrequency;
+		this.testSPS = testSamplesPerSecond;
+		this.testSPC = (int) (this.testSPS/this.testFreq);
+		this.testSPQC = this.testSPC/4;
+		SinGenerator sampleGen = new SinGenerator();
+		this.testSample = sampleGen.generateDToneSamples(this.testSPS, this.testFreq, this.testSPC);
+	
+		AudioFs.printSamples(this.testSample);
 	}
 	
-	public void clearReferences() {
-		refF.clear();
-		refSPS.clear();
-		refs.clear();
+	public double testAudio(double[] audio) throws IllegalArgumentException {
+		if (audio.length < this.testSPC+this.testSPQC) throw new IllegalArgumentException("Audio data too small!");
+		
+		int maxComparesPerOffset = (int) Math.floor((audio.length-this.testSPQC)/this.testSPC);
+		
+		double[] comparisonResults = new double[maxComparesPerOffset*2];
+		
+		for(int cSet = 0; cSet < maxComparesPerOffset; cSet++) {
+			comparisonResults[cSet*2] = compareAudioSection(audio, (cSet*this.testSPC));
+			comparisonResults[(cSet*2)+1] = compareAudioSection(audio, (cSet*this.testSPC)+this.testSPQC);
+		}
+		
+		double[] comparisonResultsSquared = new double[comparisonResults.length];
+		for(int rPos = 0; rPos < comparisonResultsSquared.length; rPos++) {
+			comparisonResultsSquared[rPos] = comparisonResults[rPos] * comparisonResults[rPos];
+		}
+		
+		double[] squaresSetTotals = new double[maxComparesPerOffset];
+		for(int rPos = 0; rPos < comparisonResultsSquared.length; rPos+=2) {
+			squaresSetTotals[rPos/2] = comparisonResultsSquared[rPos] + comparisonResultsSquared[rPos+1];
+		}
+		
+		double[] sqrtTotals = new double[squaresSetTotals.length];
+		for(int sPos = 0; sPos < squaresSetTotals.length; sPos++) {
+			sqrtTotals[sPos] = Math.sqrt(squaresSetTotals[sPos]);//TODO fix for 90deg not being 0...
+		}
+		
+		double totalSqrts = sqrtTotals[0];
+		for(int sPos = 1; sPos < squaresSetTotals.length; sPos++) {
+			totalSqrts += sqrtTotals[sPos];
+		}
+		
+		double average = totalSqrts/sqrtTotals.length;
+		
+		return average;
 	}
 	
-	double[] getReference(int samplesPS, double frequency) {
-		for (int i = 0; i < refF.size(); i++) {
-			if (refF.get(i) == frequency && refSPS.get(i) == samplesPS) return refs.get(i);
+	public double compareAudioSection(double[] audio, int offset) {//TODO remove public
+		if(audio.length-offset < this.testSPC) throw new IllegalArgumentException("Offset to large!");
+		
+		double[] prodAll = new double[this.testSPC];
+		for(int prodPos = 0; prodPos < prodAll.length; prodPos++) {
+			prodAll[prodPos] = this.testSample[prodPos]*audio[offset+prodPos];
 		}
 		
-		addReference(samplesPS, frequency);
-		return (refs.get(refs.size()-1));
-	}
-	
-	public double testAudio(double[] audio, int samplesPS, double frequency) {
-		int samplesPC = (int) (samplesPS/frequency);
-		double[] ref = this.getReference(samplesPS, frequency);
-		double[] tempSamplePoss = new double[audio.length];
-		double[] cycle = new double[samplesPC];
-		double[] tempValues = new double[samplesPC];
-		double[] offsetValues = new double[samplesPC];
-		
-		for(int cPos = 0; cPos < samplesPC; cPos++) {
-			for(int position = cPos; position < audio.length; position += samplesPC) {
-				tempSamplePoss[position] = audio[position];
-			}
-			cycle[cPos] = ArrayFs.doubleTotal(tempSamplePoss)/(audio.length/samplesPC);
-			tempSamplePoss = new double[audio.length];
+		double total = prodAll[0];
+		for(int prodPos = 1; prodPos < prodAll.length; prodPos++) {
+			total += prodAll[prodPos];
 		}
 		
-		for(int off = 0; off < samplesPC; off++) {
-			for(int pos = 0; pos < samplesPC; pos++) {
-				tempValues[pos] = ref[pos] * cycle[(pos+off)%samplesPC];
-			}
-			offsetValues[off] = ArrayFs.doubleAverage(tempValues);
-		}
+		double average = total/prodAll.length;
 		
-		//print cycle
-		/*for(int i = 0; i < cycle.length; i++) {
-			int v = (int)((cycle[i]+1d)*20d);
-			for(int I = 0; I < v; I++) {
-				System.out.print("-");
-			}
-			System.out.println();
-		}
-		System.out.println("positionValues");
-		//print cycle
-		for(int i = 0; i < offsetValues.length; i++) {
-			int v = (int)((offsetValues[i]+1d)*20d);
-			for(int I = 0; I < v; I++) {
-				System.out.print("-");
-			}
-			System.out.println();
-		}*/
-		
-		double out = (ArrayFs.doubleTotal(ArrayFs.doubleABS(offsetValues))/((double)samplesPC)) * Math.PI;
-		if (out > 1d) return 1d;
-		if (out < 0d) return 0d;
-		return out;
-		
+		return average*2;//TODO Multiple times scale for RMS?
 	}
 }
