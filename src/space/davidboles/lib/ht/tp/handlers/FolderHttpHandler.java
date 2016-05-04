@@ -1,4 +1,5 @@
-package space.davidboles.lib.ht.tp.contextualhandlers;
+package space.davidboles.lib.ht.tp.handlers;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -6,13 +7,15 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 
-import space.davidboles.lib.ht.tp.ContextualHttpHandler;
+import space.davidboles.lib.ht.tp.HandlerFs;
 import space.davidboles.lib.ht.tp.MIMESwitcher;
 
-public class FolderHttpHandler extends ContextualHttpHandler {
+public class FolderHttpHandler implements HttpHandler {
 
 	public String urlPath;
 	public File directory;
@@ -20,11 +23,6 @@ public class FolderHttpHandler extends ContextualHttpHandler {
 	public FolderHttpHandler(String urlPath, File directory) {
 		this.urlPath = urlPath;
 		this.directory = directory;
-	}
-	
-	@Override
-	public String getContext() {
-		return this.urlPath;
 	}
 
 	@Override
@@ -43,7 +41,7 @@ public class FolderHttpHandler extends ContextualHttpHandler {
 		File file = new File(root + path).getCanonicalFile();
 		
 		if (!file.isFile()) {
-			this.defaultError404(t);
+			HandlerFs.respondNotFoundDefault(t);
 		} else {
 			// Object exists and is a file: accept with response code 200.
 			String mime = MIMESwitcher.toMIME(file.getCanonicalPath());
@@ -62,7 +60,7 @@ public class FolderHttpHandler extends ContextualHttpHandler {
 			}
 			fs.close();
 			os.close();
-		 } 
+		 }
 		
 	}
 

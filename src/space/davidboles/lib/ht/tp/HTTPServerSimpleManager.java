@@ -2,6 +2,7 @@ package space.davidboles.lib.ht.tp;
 
 import java.net.InetSocketAddress;
 
+import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 public class HTTPServerSimpleManager {
@@ -25,8 +26,8 @@ public class HTTPServerSimpleManager {
 	    this.s.start();
 	}
 	
-	public void addHandler(ContextualHttpHandler h) {
-		this.s.createContext(h.getContext(), h);
+	public void createContext(String context, HttpHandler handler) {
+		this.s.createContext(context, handler);
 	}
 	
 }

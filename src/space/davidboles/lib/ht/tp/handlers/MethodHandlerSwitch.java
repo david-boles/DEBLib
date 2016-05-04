@@ -1,13 +1,11 @@
-package space.davidboles.lib.ht.tp.contextualhandlers;
+package space.davidboles.lib.ht.tp.handlers;
 
 import java.io.IOException;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-import space.davidboles.lib.ht.tp.ContextualHttpHandler;
-
-public class MethodHandlerSwitch extends ContextualHttpHandler{
+public class MethodHandlerSwitch implements HttpHandler {
 	public static final int METHOD_DEFAULT = 0;
 	public static final int METHOD_GET = 1;
 	public static final int METHOD_HEAD = 2;
@@ -55,11 +53,6 @@ public class MethodHandlerSwitch extends ContextualHttpHandler{
 		HttpHandler handler = this.methodSpecificHandlers[method];
 		if(handler == null) handler = this.methodSpecificHandlers[METHOD_DEFAULT];
 		return handler;
-	}
-
-	@Override
-	public String getContext() {
-		return this.context;
-	}
+	}	
 	
 }
