@@ -12,7 +12,7 @@ public class AttributePredicate implements Predicate<Attribute<?>> {
 	
 	@Override
 	public boolean test(Attribute<?> t) {
-		return id.equals(t.aID);
+		return id.equals(t.getID());
 	}
 
 	

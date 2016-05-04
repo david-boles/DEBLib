@@ -26,7 +26,7 @@ public class HTTPServerSimpleManager {
 	}
 	
 	public void addHandler(ContextualHttpHandler h) {
-		this.s.createContext(h.getURLPath(), h);
+		this.s.createContext(h.getContext(), h);
 	}
 	
 }

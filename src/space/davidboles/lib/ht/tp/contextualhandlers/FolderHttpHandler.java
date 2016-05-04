@@ -1,4 +1,4 @@
-package space.davidboles.lib.ht.tp;
+package space.davidboles.lib.ht.tp.contextualhandlers;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,6 +8,9 @@ import java.net.URISyntaxException;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
+
+import space.davidboles.lib.ht.tp.ContextualHttpHandler;
+import space.davidboles.lib.ht.tp.MIMESwitcher;
 
 public class FolderHttpHandler extends ContextualHttpHandler {
 
@@ -20,7 +23,7 @@ public class FolderHttpHandler extends ContextualHttpHandler {
 	}
 	
 	@Override
-	public String getURLPath() {
+	public String getContext() {
 		return this.urlPath;
 	}
 

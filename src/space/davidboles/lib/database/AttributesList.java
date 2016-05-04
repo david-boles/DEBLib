@@ -16,7 +16,7 @@ public class AttributesList implements Serializable {
 	 */
 	public boolean addSet(Attribute<? extends Serializable> a) {
 		synchronized(this.attributes) {
-			boolean removed = this.attributes.removeIf(new AttributePredicate(a.aID));
+			boolean removed = this.attributes.removeIf(new AttributePredicate(a.getID()));
 			this.attributes.add(a);
 			return removed;
 		}
@@ -55,18 +55,19 @@ public class AttributesList implements Serializable {
 	public <T extends Serializable> Attribute<T> getAttribute(String id) throws ClassCastException {
 		synchronized(this.attributes) {
 			Attribute<?> a = this.attributes.ceiling(new Attribute<T>(id, null));
-			if(a.aID.equals(id)) return (Attribute<T>) a;
+			if(a.getID().equals(id)) return (Attribute<T>) a;
 			else return null;
 		}
 	}
 	
 	/**
-	 * Copies the AttributeList into an Array.
+	 * Copies the AttributeList and it's contained Attributes into an Array.
 	 * @return The copy of the AttributeList.
 	 */
-	public Attribute<? extends Serializable>[] getAllSafe() {
+	@SuppressWarnings("unchecked")
+	public Attribute<? extends Serializable>[] getAll() {
 		synchronized(this.attributes) {
-			return this.attributes.toArray(new Attribute<?>[this.attributes.size()]);
+			return (Attribute<? extends Serializable>[]) this.attributes.toArray();
 		}
 	}
 	
@@ -77,6 +78,19 @@ public class AttributesList implements Serializable {
 	@SuppressWarnings("unchecked")
 	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
 		this.attributes = (TreeSet<Attribute<? extends Serializable>>) in.readObject();
+	}
+	
+	@Override
+	public String toString() {
+		Attribute<? extends Serializable>[] attributes = this.getAll();
+		
+		String out = this.getClass().getSimpleName() + ": {" + attributes[0];
+		
+		for(int a = 1; a < attributes.length; a++) {
+			out += ", " + attributes[a];
+		}
+		
+		return out;
 	}
 
 }

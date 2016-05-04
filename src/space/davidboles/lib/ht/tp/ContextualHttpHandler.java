@@ -14,7 +14,7 @@ public abstract class ContextualHttpHandler implements HttpHandler {
 		this.error404 = error404;
 	}
 	
-	public abstract String getURLPath();
+	public abstract String getContext();
 	
 	public void defaultError404(com.sun.net.httpserver.HttpExchange t) throws IOException {
 		t.sendResponseHeaders(404, error404.length());
